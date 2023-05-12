@@ -25,11 +25,11 @@ public class PipeSpawner : MonoBehaviour
         if (!pipesOnScreen && currentPipesOnScreen < maxPipesOnScreen)
         {
             // Generate a random spawn position for the new pipes
-            // float spawnPosY = Random.Range(minSpawnPosY, maxSpawnPosY);
-            // Vector3 spawnPos = new Vector3(spawnPosX, spawnPosY, 0);
+            float spawnPosY = Random.Range(minSpawnPosY, maxSpawnPosY);
+            Vector3 spawnPos = new Vector3(spawnPosX, spawnPosY, 0);
 
             // Instantiate the new pipes
-            GameObject newPipes = Instantiate(pipePrefab, transform.position, transform.rotation);
+            GameObject newPipes = Instantiate(pipePrefab, spawnPos, Quaternion.identity);
 
             // Increment the number of pipes on screen and set the boolean to true
             currentPipesOnScreen++;
@@ -50,5 +50,6 @@ public class PipeSpawner : MonoBehaviour
                 pipesOnScreen = false;
             }
         }
+        SpawnPipe();
     }
 }
