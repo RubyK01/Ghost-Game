@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Ghosty : MonoBehaviour{
     public float jumpForce = 10f;
@@ -10,7 +11,7 @@ public class Ghosty : MonoBehaviour{
 
     private Rigidbody2D rb;
     private bool isDead;
-
+    public string currentScene;
     private float currentRotation;
     private float targetRotation;
     private float rotationDirection;
@@ -22,6 +23,7 @@ public class Ghosty : MonoBehaviour{
         currentRotation = transform.rotation.eulerAngles.z;
         targetRotation = rotateAngle1;
         rotationDirection = 1f;
+         currentScene = SceneManager.GetActiveScene().name;
     }
 
     private void Update()
@@ -39,6 +41,11 @@ public class Ghosty : MonoBehaviour{
             {
                 targetRotation = rotateAngle2;
             }
+        }
+
+        if (isDead && Input.GetKeyDown(KeyCode.Space))
+        {
+            SceneManager.LoadScene(currentScene);
         }
 
         currentRotation += rotationDirection * rotateSpeed * Time.deltaTime;

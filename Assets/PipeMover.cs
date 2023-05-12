@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 public class PipeMover : MonoBehaviour
 {
-    public float speed = 1f;
-    public float despawnX = -10f;
+    public float speed = 5f;
+    public float despawnX = -30f;
     
     private void Update()
     {

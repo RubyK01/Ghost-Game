@@ -1,70 +1,54 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PipeSpawner : MonoBehaviour
 {
-    public GameObject pipePrefab; // The prefab for the pipe
-    public float pipeSpeed = 3f; // The speed at which the pipes move towards the player
-    public float pipeScaleMin = 0.5f; // The minimum scale for the pipes
-    public float pipeScaleMax = 2f; // The maximum scale for the pipes
-    public float colliderOffset = 0.5f; // The offset for the pipe's box collider
-    public float spawnRate = 2;
-    private float spawnTimer = 0; // The timer for spawning pipes
-    public float speed = 2.0f;
-    public float despawnX = -10f;
+    public GameObject pipePrefab;
+    public float spawnDelay = 1.5f; // Delay of when the next pair of pipes spawn
+    public float spawnPosX = 10f; // spawn position of pipes
+    public float minSpawnPosY = -1f; // minimum length of a pipe
+    public float maxSpawnPosY = 3f; // maximun length of a pipe
+    public float despawnPosX = -15f; // Position pipes are despawned off screen.
+    public int maxPipesOnScreen = 20;  // Maximum number of pipes allowed on screen
+    private int currentPipesOnScreen = 0;  // Current number of pipes on screen
+    private bool pipesOnScreen = false;  // Boolean to track if there are currently any pipes on screen
 
-    void Start()
+    private void Start()
     {
-        // Move the pipe to the left of the screen if it is already on screen
-        if (transform.position.x > -3.5f)
-        {
-            transform.position = new Vector3(-6.0f, transform.position.y, transform.position.z);
-        }
+        // Spawn the initial pair of pipes
+        SpawnPipe();
     }
-    
-    void Update()
+
+    private void SpawnPipe()
     {
-
-         // Move the pipe to the left
-        transform.position +=  (Vector3.left * speed) * Time.deltaTime;
-
-        spawnTimer += Time.deltaTime;
-
-        // If the spawn timer has reached the spawn delay, spawn a pipe and reset the timer
-        if (spawnTimer < spawnRate)
+        if (!pipesOnScreen && currentPipesOnScreen < maxPipesOnScreen)
         {
-            SpawnPipe();
-            spawnTimer += Time.deltaTime;
-            spawnTimer = 0;
-        }
+            // Generate a random spawn position for the new pipes
+            // float spawnPosY = Random.Range(minSpawnPosY, maxSpawnPosY);
+            // Vector3 spawnPos = new Vector3(spawnPosX, spawnPosY, 0);
 
-        if (transform.position.x < despawnX)
-        {
-            // Destroy the pipes when they go off screen
-            Destroy(gameObject);
+            // Instantiate the new pipes
+            GameObject newPipes = Instantiate(pipePrefab, transform.position, transform.rotation);
+
+            // Increment the number of pipes on screen and set the boolean to true
+            currentPipesOnScreen++;
+            pipesOnScreen = true;
         }
     }
 
-    void SpawnPipe()
+    private void Update()
     {
-        Instantiate (pipePrefab, transform.position, transform.rotation);
-        // Instantiate a new pipe from the pipe prefab
-        // GameObject newPipe = Instantiate(pipePrefab, transform.position, transform.rotation);
-
-        // // Set the scale of the new pipe to a random value between pipeScaleMin and pipeScaleMax
-        // float pipeScale = Random.Range(pipeScaleMin, pipeScaleMax);
-        // newPipe.transform.localScale = new Vector3(pipeScale, pipeScale, 1f);
-
-        // Set the position of the new pipe to be off-screen to the right
-        Vector3 spawnPos = Camera.main.ViewportToWorldPoint(new Vector3(1.1f, Random.Range(0.2f, 0.8f), 10f));
-        pipePrefab.transform.position = spawnPos;
-
-        // // Set the velocity of the new pipe to move towards the player
-        // Rigidbody2D rb = newPipe.GetComponent<Rigidbody2D>();
-        // rb.velocity = new Vector2(-pipeSpeed, 0f);
-
-        // // Adjust the box collider for the new pipe based on its scale
-        // BoxCollider2D collider = newPipe.GetComponent<BoxCollider2D>();
-        // collider.size = new Vector2(collider.size.x, pipeScale - colliderOffset);
-        // collider.offset = new Vector2(collider.offset.x, -colliderOffset / 2f);
+        // Check if any pipes have moved offscreen and despawn them
+        GameObject[] pipes = GameObject.FindGameObjectsWithTag("Pipe");
+        foreach (GameObject pipe in pipes)
+        {
+            if (pipe.transform.position.x < despawnPosX)
+            {
+                Destroy(pipe);
+                currentPipesOnScreen--;
+                pipesOnScreen = false;
+            }
+        }
     }
 }
